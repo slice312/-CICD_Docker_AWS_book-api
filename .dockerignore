@@ -1,0 +1,10 @@
+# WebStorm
+.idea/
+
+# git
+.git/
+
+
+# builds
+bin/
+obj/
