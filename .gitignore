@@ -1,0 +1,10 @@
+# Rider
+.idea/
+
+# VS Code
+.vs/
+
+
+# builds
+bin/
+obj/
