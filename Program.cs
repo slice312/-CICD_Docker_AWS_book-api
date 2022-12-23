@@ -31,6 +31,16 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+
+   // Shows UseCors with CorsPolicyBuilder.
+    app.UseCors(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+
+
 app.UseAuthorization();
 
 app.MapControllers();

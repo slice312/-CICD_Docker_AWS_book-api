@@ -1,0 +1,31 @@
+
+name: CI-CD
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      REMOTE_HOST: ${{ secrets.HOST_DNS }}
+      REMOTE_USER: ${{ secrets.USERNAME }}
+      TARGET: ${{ secrets.TARGET_DIR }}   # dir on ubuntu (~/app)
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: easingthemes/ssh-deploy@main
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}   # IP EC2  (3.113.31.75)
+          username: ${{ secrets.USERNAME }}  # ubuntu user (ubuntu по дефолту в инстанце EC2)
+          key: ${{ secrets.EC2_SSH_KEY }}   # EC2 private key  (из .pem файл и не забыть в конце символ '\n' для ED25519 ключа)
+
+          script: |
+            cd ${{ secrets.TARGET_DIR }}
+            sudo docker compose up --build -d
+#            chmod 700 buildscript.sh
+#            sudo bash buildscript.sh

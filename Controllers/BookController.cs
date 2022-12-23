@@ -11,17 +11,22 @@ public class BookController : ControllerBase
 {
     private readonly IDynamoDBContext _dynamoDbContext;
     private readonly IAmazonDynamoDB _amazonDynamoDb;
+    private readonly ILogger<WeatherForecastController> _logger;
 
-    public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)
+
+    public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, ILogger<WeatherForecastController> logger)
     {
         _dynamoDbContext = dynamoDbContext;
         _amazonDynamoDb = amazonDynamoDb;
+        _logger = logger;
+
     }
 
     [HttpGet]
     [Route("get")]
     public async Task<IActionResult> GetAll()
     {
+        return base.Ok("LOL kek");
         var conditions = new List<ScanCondition>();
         var allDocs = await _dynamoDbContext.ScanAsync<Book>(conditions).GetRemainingAsync();
         return base.Ok(allDocs);
