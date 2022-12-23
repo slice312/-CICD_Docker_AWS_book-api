@@ -8,7 +8,7 @@ public class Book
     [DynamoDBHashKey("category")]
     public string? Category { get; set; }
 
-    [DynamoDBProperty("title")]
+    [DynamoDBRangeKey("title")]
     public string? Title { get; set; }
     
     [DynamoDBProperty("description")]

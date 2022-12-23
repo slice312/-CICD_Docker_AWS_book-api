@@ -19,6 +19,15 @@ public class BookController : ControllerBase
     }
 
     [HttpGet]
+    [Route("get")]
+    public async Task<IActionResult> GetAll()
+    {
+        var conditions = new List<ScanCondition>();
+        var allDocs = await _dynamoDbContext.ScanAsync<Book>(conditions).GetRemainingAsync();
+        return base.Ok(allDocs);
+    }
+    
+    [HttpGet]
     [Route("get/{category}")]
     public async Task<IActionResult> Get(string category)
     {

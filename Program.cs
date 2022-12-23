@@ -1,6 +1,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,6 @@ builder.Services.AddSwaggerGen();
 
 // Get the AWS profile information from configuration providers
 AWSOptions awsOptions = builder.Configuration.GetAWSOptions();
-
 // Configure AWS service clients to use these credentials
 builder.Services.AddDefaultAWSOptions(awsOptions);
 
