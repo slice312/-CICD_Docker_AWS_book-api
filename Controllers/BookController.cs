@@ -1,7 +1,9 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Microsoft.AspNetCore.Mvc;
+using book_app_api.Models;
 
 namespace book_app_api.Controllers;
 
@@ -11,7 +13,7 @@ public class BookController : ControllerBase
 {
     private readonly IDynamoDBContext _dynamoDbContext;
     private readonly IAmazonDynamoDB _amazonDynamoDb;
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<WeatherForecastController> _logger; // TODO: решить типы
 
 
     public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, ILogger<WeatherForecastController> logger)
@@ -23,14 +25,24 @@ public class BookController : ControllerBase
     }
 
     [HttpGet]
-    [Route("get")]
+    [Route("list")]
     public async Task<IActionResult> GetAll()
     {
-        return base.Ok("LOL kek");
-        var conditions = new List<ScanCondition>();
-        var allDocs = await _dynamoDbContext.ScanAsync<Book>(conditions).GetRemainingAsync();
-        return base.Ok(allDocs);
+        List<Book> allBooks = await _dynamoDbContext.ScanAsync<Book>(new List<ScanCondition>())
+            .GetRemainingAsync();
+        return base.Ok(allBooks);
     }
+    
+    [HttpDelete]
+    [Route("{isbn}")]
+    public async Task<IActionResult> Delete(string isbn)
+    {
+        // DeleteAsync is used to delete an item from DynamoDB
+        await _dynamoDbContext.DeleteAsync<Book>(isbn);
+        return base.Ok();
+    }
+
+    
     
     [HttpGet]
     [Route("get/{category}")]
@@ -42,7 +54,6 @@ public class BookController : ControllerBase
     }
 
     [HttpPost]
-    [Route("save")]
     public async Task<IActionResult> Save(Book book)
     {
         // SaveAsync is used to put an item in DynamoDB, it will overwrite if an item with the same primary key already exists
@@ -50,15 +61,7 @@ public class BookController : ControllerBase
         return base.Ok();
     }
     
-    [HttpDelete]
-    [Route("delete/{category}")]
-    public async Task<IActionResult> Delete(string category)
-    {
-        // DeleteAsync is used to delete an item from DynamoDB
-        await _dynamoDbContext.DeleteAsync<Book>(category);
-        return base.Ok();
-    }
-    
+
     [HttpGet]
     [Route("search/{category}")]
     public async Task<IActionResult> Search(string category, string? bookTitle = null, decimal? price = null)

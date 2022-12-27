@@ -1,13 +1,12 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
-using Amazon.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -32,13 +31,13 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 
-   // Shows UseCors with CorsPolicyBuilder.
-    app.UseCors(builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
+// Shows UseCors with CorsPolicyBuilder.
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 
 app.UseAuthorization();
