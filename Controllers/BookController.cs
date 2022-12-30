@@ -16,12 +16,12 @@ public class BookController : ControllerBase
     private readonly ILogger<WeatherForecastController> _logger; // TODO: решить типы
 
 
-    public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, ILogger<WeatherForecastController> logger)
+    public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb,
+        ILogger<WeatherForecastController> logger)
     {
         _dynamoDbContext = dynamoDbContext;
         _amazonDynamoDb = amazonDynamoDb;
         _logger = logger;
-
     }
 
     [HttpGet]
@@ -32,7 +32,22 @@ public class BookController : ControllerBase
             .GetRemainingAsync();
         return base.Ok(allBooks);
     }
-    
+
+    [HttpGet]
+    [Route("{isbn}")]
+    public async Task<IActionResult> Get(string isbn)
+    {
+        var book = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        return base.Ok(book);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(Book book)
+    {
+        await _dynamoDbContext.SaveAsync<Book>(book);
+        return base.Ok(book);
+    }
+
     [HttpDelete]
     [Route("{isbn}")]
     public async Task<IActionResult> Delete(string isbn)
@@ -42,25 +57,28 @@ public class BookController : ControllerBase
         return base.Ok();
     }
 
-    
-    
-    [HttpGet]
-    [Route("get/{category}")]
-    public async Task<IActionResult> Get(string category)
+    [HttpPut]
+    [Route("{isbn}")]
+    public async Task<IActionResult> Update(string isbn, Book book)
     {
-        // LoadAsync is used to load single item
-        var product = await _dynamoDbContext.LoadAsync<Book>(category);
-        return base.Ok(product);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Save(Book book)
-    {
-        // SaveAsync is used to put an item in DynamoDB, it will overwrite if an item with the same primary key already exists
-        await _dynamoDbContext.SaveAsync(book);
-        return base.Ok();
+        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        if (bookInBase is null)
+            return base.NotFound();
+        await _dynamoDbContext.SaveAsync<Book>(book);
+        return base.Ok("book");
     }
     
+    [HttpPatch]
+    [Route("{isbn}")]
+    public async Task<IActionResult> ToggleFavorite(string isbn)
+    {
+        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        if (bookInBase is null)
+            return base.NotFound();
+        bookInBase.IsFavorite = !bookInBase.IsFavorite;
+        await _dynamoDbContext.SaveAsync<Book>(bookInBase);
+        return base.Ok(new {IsFavorite = bookInBase.IsFavorite});
+    }
 
     [HttpGet]
     [Route("search/{category}")]

@@ -1,6 +1,7 @@
-version: '3'
+version: "3"
 services:
   book-app-api:
+    restart: unless-stopped
     build: .
     ports:
       - "80:80"
@@ -9,9 +10,8 @@ services:
 #      ASPNETCORE_URLS: "https://+;http://+"
 #      ASPNETCORE_HTTPS_PORT: "8001"
       ASPNETCORE_ENVIRONMENT: Development
-    volumes:
-      - ~/.aws/:/root/.aws:ro
 
+      
 #    external: true
 #      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
 #      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/ 
