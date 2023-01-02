@@ -2,7 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 
 namespace book_app_api.Models;
 
-[DynamoDBTable("books")]
+[DynamoDBTable("Books")]
 public class Book
 {
     [DynamoDBHashKey("isbn")]
