@@ -1,7 +1,5 @@
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using Microsoft.AspNetCore.Mvc;
 using book_app_api.Models;
 
@@ -12,16 +10,11 @@ namespace book_app_api.Controllers;
 public class BookController : ControllerBase
 {
     private readonly IDynamoDBContext _dynamoDbContext;
-    private readonly IAmazonDynamoDB _amazonDynamoDb;
-    private readonly ILogger<WeatherForecastController> _logger; // TODO: решить типы
+    // private readonly IAmazonDynamoDB _amazonDynamoDb;
 
-
-    public BookController(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb,
-        ILogger<WeatherForecastController> logger)
+    public BookController(IDynamoDBContext dynamoDbContext)
     {
         _dynamoDbContext = dynamoDbContext;
-        _amazonDynamoDb = amazonDynamoDb;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -65,7 +58,7 @@ public class BookController : ControllerBase
         if (bookInBase is null)
             return base.NotFound();
         await _dynamoDbContext.SaveAsync<Book>(book);
-        return base.Ok("book");
+        return base.Ok(book);
     }
     
     [HttpPatch]
