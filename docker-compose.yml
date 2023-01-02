@@ -5,13 +5,6 @@ services:
     build: .
     ports:
       - "80:80"
-      - "8001:443"
+      - "443:443"
     environment:
-#      ASPNETCORE_URLS: "https://+;http://+"
-#      ASPNETCORE_HTTPS_PORT: "8001"
       ASPNETCORE_ENVIRONMENT: Development
-
-      
-#    external: true
-#      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
-#      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/ 
