@@ -1,5 +1,4 @@
-
-name: CI-CD
+name: Deploy on AWS EC2
 on:
   push:
     branches:
@@ -10,22 +9,19 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-      REMOTE_HOST: ${{ secrets.HOST_DNS }}
-      REMOTE_USER: ${{ secrets.USERNAME }}
-      TARGET: ${{ secrets.TARGET_DIR }}   # dir on ubuntu (~/app)
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}  # Private key of EC2 KeyPair (for ED25519 don't forget add '\n' at the end)
+      REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
+      REMOTE_USER: ${{ secrets.USERNAME }}         # Ubuntu user, by default "ubuntu"
+      TARGET: ${{ secrets.TARGET_DIR }}            # Directory for application on Ubuntu server on ubuntu (~/app)
 
     steps:
       - uses: actions/checkout@v3
       - uses: easingthemes/ssh-deploy@main
       - uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST_DNS }}   # IP EC2  (3.113.31.75)
-          username: ${{ secrets.USERNAME }}  # ubuntu user (ubuntu по дефолту в инстанце EC2)
-          key: ${{ secrets.EC2_SSH_KEY }}   # EC2 private key  (взять из .pem файла и не забыть в конце символ '\n' для ED25519 ключа)
-                                            # это KeyPair который вручную создал и привязал к EC2 инстанцу
+          host: ${{ secrets.HOST_DNS }}   
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
             sudo docker compose up --build -d
-#            chmod 700 buildscript.sh
-#            sudo bash buildscript.sh
