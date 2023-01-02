@@ -17,17 +17,8 @@ public class Book
     [DynamoDBProperty("description")]
     public string? Description { get; set; }
     
-    [DynamoDBProperty("year")]
-    public int? Year { get; set; }
-    
     [DynamoDBProperty("pages")]
     public int? Pages { get; set; }
-    
-    [DynamoDBProperty("price")]
-    public decimal? Price { get; set; }
-
-    [DynamoDBProperty("qty")]
-    public int? Qty { get; set; }
     
     [DynamoDBProperty("isFavorite")]
     public bool IsFavorite { get; set; }
