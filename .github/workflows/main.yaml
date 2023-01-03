@@ -25,5 +25,4 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR }}
             export FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }}
-#            printf "\n      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }}" >> docker-compose.yaml
-            sudo docker compose up --build -d            
+            sudo docker compose up --build -d      
