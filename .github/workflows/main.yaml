@@ -24,5 +24,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
-            printf "\n      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }}" >> docker-compose.yaml
+            export FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }}
+#            printf "\n      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }}" >> docker-compose.yaml
             sudo docker compose up --build -d            

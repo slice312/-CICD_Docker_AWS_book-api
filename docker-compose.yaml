@@ -8,3 +8,4 @@ services:
       - "443:443"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      FRONTEND_ALLOWED_HOSTS: ${FRONTEND_ALLOWED_HOSTS}
