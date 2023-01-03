@@ -2,7 +2,7 @@ using book_app_api.Models;
 
 namespace book_app_api.Services;
 
-public interface IBookService
+public interface IBooksService
 {
     Task<List<Book>> GetAllBooksAsync();
 

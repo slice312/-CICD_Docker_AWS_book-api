@@ -45,7 +45,7 @@ builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
 
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBooksService, BooksService>();
 
 
 var app = builder.Build();

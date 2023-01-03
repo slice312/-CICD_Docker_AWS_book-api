@@ -5,11 +5,11 @@ using book_app_api.Models;
 
 namespace book_app_api.Services;
 
-public class BookService : IBookService
+public class BooksService : IBooksService
 {
     private readonly IDynamoDBContext _dynamoDbContext;
 
-    public BookService(IDynamoDBContext dynamoDbContext)
+    public BooksService(IDynamoDBContext dynamoDbContext)
     {
         _dynamoDbContext = dynamoDbContext;
     }
