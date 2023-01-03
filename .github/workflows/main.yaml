@@ -8,7 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     env:
       SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}  # Private key of EC2 KeyPair (for ED25519 don't forget add '\n' at the end)
       REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
