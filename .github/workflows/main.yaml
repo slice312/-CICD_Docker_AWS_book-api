@@ -28,4 +28,4 @@ jobs:
             echo "$FRONTEND_ALLOWED_HOSTS" > result.txt
             sudo docker compose up --build -d
       - name: Set env
-        run: export FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }} 
+        run: export FRONTEND_ALLOWED_HOSTS="${{ secrets.FRONTEND_ALLOWED_HOSTS }}" 
