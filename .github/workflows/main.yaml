@@ -13,7 +13,7 @@ jobs:
       REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
       REMOTE_USER: ${{ secrets.USERNAME }}         # Ubuntu user, by default "ubuntu"
       TARGET: ${{ secrets.TARGET_DIR }}            # Directory for application on Ubuntu server on ubuntu (~/app)
-      FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
+#      FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
       
     steps:
       - uses: actions/checkout@v3
