@@ -12,14 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Get the AWS profile information from configuration providers
-AWSOptions awsOptions = builder.Configuration.GetAWSOptions();
-// Configure AWS service clients to use these credentials
-builder.Services.AddDefaultAWSOptions(awsOptions);
-
-builder.Services.AddAWSService<IAmazonDynamoDB>();
-builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
-
 builder.Services.AddHttpLogging(logging =>
 {
     logging.LoggingFields = HttpLoggingFields.RequestMethod
@@ -29,32 +21,38 @@ builder.Services.AddHttpLogging(logging =>
                             | HttpLoggingFields.RequestProtocol;
 });
 
-
-var app = builder.Build();
-
-app.UseHttpLogging();
-
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
+builder.Services.AddCors(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-
-// Shows UseCors with CorsPolicyBuilder.
-app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader();
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "http://book-app-react.s3-website-ap-northeast-1.amazonaws.com"
+            )
+            .AllowAnyMethod();
+    });
 });
 
 
-app.UseAuthorization();
+// Get the AWS profile information from configuration providers
+AWSOptions awsOptions = builder.Configuration.GetAWSOptions();
+// Configure AWS service clients to use these credentials
+builder.Services.AddDefaultAWSOptions(awsOptions);
 
+builder.Services.AddAWSService<IAmazonDynamoDB>();
+builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+
+
+var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseHttpLogging();
+app.UseCors();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
