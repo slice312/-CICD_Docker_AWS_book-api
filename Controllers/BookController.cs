@@ -1,7 +1,7 @@
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Microsoft.AspNetCore.Mvc;
+
 using book_app_api.Models;
+using book_app_api.Services;
 
 
 namespace book_app_api.Controllers;
@@ -10,102 +10,80 @@ namespace book_app_api.Controllers;
 [Route("api/[controller]")]
 public class BookController : ControllerBase
 {
-    private readonly IDynamoDBContext _dynamoDbContext;
-    // private readonly IAmazonDynamoDB _amazonDynamoDb;
+    private readonly IBookService _bookService;
 
-    public BookController(IDynamoDBContext dynamoDbContext)
+    public BookController(IBookService bookService)
     {
-        _dynamoDbContext = dynamoDbContext;
+        _bookService = bookService;
     }
 
     [HttpGet]
     [Route("list")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllBooksAsync()
     {
-        List<Book> allBooks = await _dynamoDbContext.ScanAsync<Book>(new List<ScanCondition>())
-            .GetRemainingAsync();
+        List<Book> allBooks = await _bookService.GetAllBooksAsync();
         return Ok(allBooks);
     }
 
     [HttpGet]
     [Route("{isbn}")]
-    public async Task<IActionResult> Get(string isbn)
+    public async Task<IActionResult> GetBookAsync(string isbn)
     {
-        var book = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        Book book = await _bookService.GetBookAsync(isbn);
         return base.Ok(book);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(Book book)
+    public async Task<IActionResult> AddBookAsync(Book book)
     {
-        await _dynamoDbContext.SaveAsync<Book>(book);
+        await _bookService.AddBookAsync(book);
         return base.Ok(book);
     }
 
     [HttpDelete]
     [Route("{isbn}")]
-    public async Task<IActionResult> Delete(string isbn)
+    public async Task<IActionResult> DeleteBookAsync(string isbn)
     {
         // DeleteAsync is used to delete an item from DynamoDB
-        await _dynamoDbContext.DeleteAsync<Book>(isbn);
+        await _bookService.DeleteBookAsync(isbn);
         return base.Ok();
     }
 
     [HttpPut]
     [Route("{isbn}")]
-    public async Task<IActionResult> Update(string isbn, Book book)
+    public async Task<IActionResult> UpdateBookAsync(string isbn, Book book)
     {
-        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
-        if (bookInBase is null)
-            return base.NotFound();
-        await _dynamoDbContext.SaveAsync<Book>(book);
-        return base.Ok(book);
+        try
+        {
+            await _bookService.UpdateBookAsync(isbn, book);
+            return Ok(book);
+        }
+        catch (Exception e)
+        {
+            return NotFound();
+        }
     }
     
     [HttpPatch]
     [Route("{isbn}")]
-    public async Task<IActionResult> ToggleFavorite(string isbn)
+    public async Task<IActionResult> ToggleFavoriteAsync(string isbn)
     {
-        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
-        if (bookInBase is null)
-            return base.NotFound();
-        bookInBase.IsFavorite = !bookInBase.IsFavorite;
-        await _dynamoDbContext.SaveAsync<Book>(bookInBase);
-        return base.Ok(new {IsFavorite = bookInBase.IsFavorite});
+        try
+        {
+            var bookInBase = await _bookService.ToggleFavoriteAsync(isbn);
+            return Ok(new {IsFavorite = bookInBase.IsFavorite});
+        }
+        catch (Exception )
+        {
+            return NotFound();
+        }
     }
 
     [HttpGet]
-    [Route("search/{category}")]
-    public async Task<IActionResult> Search(string category, string? bookTitle = null, decimal? price = null)
+    [Route("search/{title}")]
+    public async Task<IActionResult> Search(string title)
     {
-        // Note: You can only query the tables that have a composite primary key (partition key and sort key).
-
-        // 1. Construct QueryFilter
-        var queryFilter = new QueryFilter("category", QueryOperator.Equal, category);
-
-        if (!string.IsNullOrEmpty(bookTitle))
-        {
-            queryFilter.AddCondition("title", ScanOperator.Equal, bookTitle);
-        }
-
-        if (price.HasValue)
-        {
-            queryFilter.AddCondition("price", ScanOperator.LessThanOrEqual, price);
-        }
-
-        // 2. Construct QueryOperationConfig
-        var queryOperationConfig = new QueryOperationConfig
-        {
-            Filter = queryFilter
-        };
-
-        // 3. Create async search object
-        var search = _dynamoDbContext.FromQueryAsync<Book>(queryOperationConfig);
-
-        // 4. Finally get all the data in a singleshot
-        List<Book> searchResponse = await search.GetRemainingAsync();
-
-        // Return it
-        return Ok(searchResponse);
+        List<Book> response = await _bookService.GetBooksByTitleAsync(title);
+        return Ok(response);
     }
 }
