@@ -29,6 +29,7 @@ jobs:
             echo "KEK" >> docker-compose.yaml
             echo ${{ secrets.FRONTEND_HOST }} >> docker-compose.yaml
             echo "  REMOTE USER" >> docker-compose.yaml
-            echo $REMOTE_USER >> docker-compose.yaml
             sudo docker compose up --build -d
+            
+#            echo $REMOTE_USER >> docker-compose.yaml
             
