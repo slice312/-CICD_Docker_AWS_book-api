@@ -26,8 +26,10 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR }}
             echo KEK >> docker-compose.yaml
-            echo "FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
+            printf "\t\tFRONTEND_HOST:$ {{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
             sudo docker compose up --build -d
+
+#            echo "\tFRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
 
 #            echo "FRONTEND_HOST=${${{ secrets.FRONTEND_HOST }}}" >> docker-compose.yaml
 #            echo "KEK" >> docker-compose.yaml
