@@ -14,8 +14,7 @@ jobs:
       REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
       REMOTE_USER: ${{ secrets.USERNAME }}         # Ubuntu user, by default "ubuntu"
       TARGET: ${{ secrets.TARGET_DIR }}            # Directory for application on Ubuntu server on ubuntu (~/app)
-#      FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
-
+      FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
     steps:
       - uses: actions/checkout@v3
       - uses: easingthemes/ssh-deploy@v3.1.0
@@ -27,6 +26,7 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR }}
             echo "FRONTEND_HOST=${${{ secrets.FRONTEND_HOST }}}" >> docker-compose.yaml
+            sudo docker compose up --build -d
+            
 #            echo ${{ secrets.FRONTEND_HOST }} >> docker-compose.yaml
 #            echo $REMOTE_USER >> docker-compose.yaml
-            sudo docker compose up --build -d
