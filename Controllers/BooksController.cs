@@ -30,7 +30,7 @@ public class BooksController : ControllerBase
     public async Task<IActionResult> GetBookAsync(string isbn)
     {
         Book book = await _booksService.GetBookAsync(isbn);
-        return base.Ok(book);
+        return Ok(book);
     }
 
     [HttpPost]
@@ -46,7 +46,7 @@ public class BooksController : ControllerBase
     {
         // DeleteAsync is used to delete an item from DynamoDB
         await _booksService.DeleteBookAsync(isbn);
-        return base.Ok();
+        return Ok();
     }
 
     [HttpPut]

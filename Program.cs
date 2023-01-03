@@ -22,13 +22,16 @@ builder.Services.AddHttpLogging(logging =>
                             | HttpLoggingFields.RequestProtocol;
 });
 
+
+var corss = Environment.GetEnvironmentVariable("FRONTEND_HOST");
+Console.Out.WriteLine("-----------__CORS " + corss);
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",
-                "http://book-app-react.s3-website-ap-northeast-1.amazonaws.com"
+                corss
             )
             .AllowAnyMethod()
             .AllowAnyHeader();
