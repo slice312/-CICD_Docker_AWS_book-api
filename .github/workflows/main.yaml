@@ -13,11 +13,13 @@ jobs:
       REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
       REMOTE_USER: ${{ secrets.USERNAME }}         # Ubuntu user, by default "ubuntu"
       TARGET: ${{ secrets.TARGET_DIR }}            # Directory for application on Ubuntu server on ubuntu (~/app)
-            # ${{ secrets.FRONTEND_ALLOWED_HOSTS }} passes via bash script with printf command into docker-compose.yaml
+      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }} passes via bash script with printf command into docker-compose.yaml
     steps:
       - uses: actions/checkout@v3
       - uses: easingthemes/ssh-deploy@v3.1.0
       - uses: appleboy/ssh-action@master
+      - name: Set env
+        run: echo "FRONTEND_ALLOWED_HOSTS=$(echo FRONTEND_ALLOWED_HOSTS | cut -c 1-6)" >> kek.ext
         with:
           host: ${{ secrets.HOST_DNS }}   
           username: ${{ secrets.USERNAME }}
