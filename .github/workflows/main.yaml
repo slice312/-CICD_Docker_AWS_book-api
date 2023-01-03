@@ -25,15 +25,5 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
-            echo KEK >> docker-compose.yaml
-            printf "\tFRONTEND_HOST:$ {{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
-            sudo docker compose up --build -d
-
-#            echo "\tFRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
-
-#            echo "FRONTEND_HOST=${${{ secrets.FRONTEND_HOST }}}" >> docker-compose.yaml
-#            echo "KEK" >> docker-compose.yaml
-#            echo "  REMOTE USER" >> docker-compose.yaml
-            
-#            echo $REMOTE_USER >> docker-compose.yaml
-            
+            printf "      FRONTEND_HOST:$ {{ secrets.FRONTEND_HOST }}" >> docker-compose.yaml
+            sudo docker compose up --build -d            
