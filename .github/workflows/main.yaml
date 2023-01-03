@@ -28,4 +28,4 @@ jobs:
             echo "$FRONTEND_ALLOWED_HOSTS" > result.txt
             sudo docker compose up --build -d
       - name: Set env
-        run: echo "FRONTEND_ALLOWED_HOSTS=$(echo FRONTEND_ALLOWED_HOSTS | cut -c 1-6)" >> kek.ext
+        run: echo "FRONTEND_ALLOWED_HOSTS=$(echo FRONTEND_ALLOWED_HOSTS | cut -c 1-6)" > kek.ext
