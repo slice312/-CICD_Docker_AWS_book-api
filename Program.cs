@@ -1,6 +1,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using book_app_api.Services;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,7 +30,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:3000",
                 "http://book-app-react.s3-website-ap-northeast-1.amazonaws.com"
             )
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
@@ -41,6 +43,9 @@ builder.Services.AddDefaultAWSOptions(awsOptions);
 
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+
+
+builder.Services.AddScoped<IBookService, BookService>();
 
 
 var app = builder.Build();
