@@ -23,7 +23,7 @@ builder.Services.AddHttpLogging(logging =>
 });
 
 
-var corss = Environment.GetEnvironmentVariable("FRONTEND_HOST");
+var corss = Environment.GetEnvironmentVariable("FRONTEND_HOSTS");
 Console.Out.WriteLine("-----------__CORS " + corss);
 builder.Services.AddCors(options =>
 {
