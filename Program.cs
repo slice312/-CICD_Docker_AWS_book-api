@@ -23,20 +23,22 @@ builder.Services.AddHttpLogging(logging =>
 });
 
 
-var corss = Environment.GetEnvironmentVariable("FRONTEND_HOSTS");
-Console.Out.WriteLine("-----------__CORS " + corss);
-builder.Services.AddCors(options =>
+string[]? allowedCorsHosts =
+    Environment.GetEnvironmentVariable("FRONTEND_ALLOWED_HOSTS")
+        ?.Split(";", StringSplitOptions.RemoveEmptyEntries);
+
+if (allowedCorsHosts is not null)
 {
-    options.AddDefaultPolicy(policy =>
+    builder.Services.AddCors(options =>
     {
-        policy.WithOrigins(
-                "http://localhost:3000",
-                corss
-            )
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.WithOrigins(allowedCorsHosts)
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
     });
-});
+}
 
 
 // Get the AWS profile information from configuration providers
