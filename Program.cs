@@ -27,6 +27,8 @@ string[]? allowedCorsHosts =
     Environment.GetEnvironmentVariable("FRONTEND_ALLOWED_HOSTS")
         ?.Split(";", StringSplitOptions.RemoveEmptyEntries);
 
+Console.WriteLine("KEK");
+Console.Out.WriteLine(string.Join(", ", allowedCorsHosts));
 if (allowedCorsHosts is not null)
 {
     builder.Services.AddCors(options =>
