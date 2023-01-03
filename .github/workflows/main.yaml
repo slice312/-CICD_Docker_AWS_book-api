@@ -27,6 +27,6 @@ jobs:
           script: |
             cd ${{ secrets.TARGET_DIR }}
             echo "FRONTEND_HOST=${${{ secrets.FRONTEND_HOST }}}" >> docker-compose.yaml
-            echo ${{ secrets.FRONTEND_HOST }} >> docker-compose.yaml;
-            echo $REMOTE_USER >> docker-compose.yaml;
+#            echo ${{ secrets.FRONTEND_HOST }} >> docker-compose.yaml
+#            echo $REMOTE_USER >> docker-compose.yaml
             sudo docker compose up --build -d
