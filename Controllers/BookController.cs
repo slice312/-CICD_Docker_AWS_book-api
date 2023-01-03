@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Microsoft.AspNetCore.Mvc;
 using book_app_api.Models;
 
+
 namespace book_app_api.Controllers;
 
 [ApiController]
@@ -23,7 +24,7 @@ public class BookController : ControllerBase
     {
         List<Book> allBooks = await _dynamoDbContext.ScanAsync<Book>(new List<ScanCondition>())
             .GetRemainingAsync();
-        return base.Ok(allBooks);
+        return Ok(allBooks);
     }
 
     [HttpGet]
