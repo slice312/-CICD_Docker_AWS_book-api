@@ -25,6 +25,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
+            echo KEK >> docker-compose.yaml
             echo "FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }} >> docker-compose.yaml
             sudo docker compose up --build -d
 
