@@ -3,7 +3,7 @@ name: Deploy on AWS EC2
 on:
   push:
     branches:
-      - test-ci
+      - master
 
 jobs:
   build-and-deploy:
@@ -13,7 +13,7 @@ jobs:
       REMOTE_HOST: ${{ secrets.HOST_DNS }}         # EC2 Instance Public IPv4 address
       REMOTE_USER: ${{ secrets.USERNAME }}         # Ubuntu user, by default "ubuntu"
       TARGET: ${{ secrets.TARGET_DIR }}            # Directory for application on Ubuntu server on ubuntu (~/app)
-      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }} # passes via bash script with printf command into docker-compose.yaml
+      FRONTEND_ALLOWED_HOSTS: ${{ secrets.FRONTEND_ALLOWED_HOSTS }} # CORS, allowed frontend hosts
     
     steps:
       - name: Set env

@@ -12,7 +12,6 @@ public static class ServiceExtensions
             Environment.GetEnvironmentVariable("FRONTEND_ALLOWED_HOSTS")
                 ?.Split(";", StringSplitOptions.RemoveEmptyEntries);
 
-        Console.WriteLine(string.Join(", ", allowedCorsHosts));
         if (allowedCorsHosts is not null)
         {
             services.AddCors(options =>
