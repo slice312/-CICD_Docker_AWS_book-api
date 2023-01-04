@@ -27,6 +27,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
-            echo "FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }}" > result.txt
+            echo "FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }}" > .env
             sudo docker compose up --build -d
        
