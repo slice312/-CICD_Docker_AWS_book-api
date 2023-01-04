@@ -27,6 +27,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}   
           script: |
             cd ${{ secrets.TARGET_DIR }}
+            export ABS=LOLKEK
             export FRONTEND_ALLOWED_HOSTS="${{ secrets.FRONTEND_ALLOWED_HOSTS }}"
             echo "$FRONTEND_ALLOWED_HOSTS" > result.txt
             sudo docker compose up --build -d

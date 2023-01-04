@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-
 using book_app_api.Models;
 using book_app_api.Services;
 
@@ -7,7 +6,8 @@ using book_app_api.Services;
 namespace book_app_api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/books")]
 public class BooksController : ControllerBase
 {
     private readonly IBooksService _booksService;
@@ -23,6 +23,17 @@ public class BooksController : ControllerBase
     {
         List<Book> allBooks = await _booksService.GetAllBooksAsync();
         return Ok(allBooks);
+    }
+
+    /// <summary>
+    /// For API Versioning test
+    /// </summary>
+    [HttpGet]
+    [Route("list")]
+    [ApiVersion("2.0")]
+    public Task<IActionResult> GetAllBooksAsync2()
+    {
+        return Task.FromResult<IActionResult>(Ok("lol kek"));
     }
 
     [HttpGet]
@@ -63,7 +74,7 @@ public class BooksController : ControllerBase
             return NotFound();
         }
     }
-    
+
     [HttpPatch]
     [Route("{isbn}")]
     public async Task<IActionResult> ToggleFavoriteAsync(string isbn)
@@ -71,9 +82,9 @@ public class BooksController : ControllerBase
         try
         {
             var bookInBase = await _booksService.ToggleFavoriteAsync(isbn);
-            return Ok(new {IsFavorite = bookInBase.IsFavorite});
+            return Ok(new { IsFavorite = bookInBase.IsFavorite });
         }
-        catch (Exception )
+        catch (Exception)
         {
             return NotFound();
         }
