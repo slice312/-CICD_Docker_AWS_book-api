@@ -3,6 +3,7 @@ using Amazon.DynamoDBv2.DocumentModel;
 
 using book_app_api.Models;
 
+
 namespace book_app_api.Services;
 
 public class BooksService : IBooksService
@@ -28,7 +29,12 @@ public class BooksService : IBooksService
 
     public async Task AddBookAsync(Book book)
     {
-        await _dynamoDbContext.SaveAsync<Book>(book);
+        if (book is null)
+            throw new ArgumentException("Book should be passed");
+        Book existingBook =  await GetBookAsync(book.Isbn);
+        if (existingBook is not null)
+            throw new ArgumentException($"Book with isbn='{book.Isbn}' already exists");
+        await _dynamoDbContext.SaveAsync(book);
     }
 
     public async Task DeleteBookAsync(string isbn)
@@ -41,7 +47,7 @@ public class BooksService : IBooksService
         var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
         if (bookInBase is null)
             throw new Exception("Not found");
-        await _dynamoDbContext.SaveAsync<Book>(book);
+        await _dynamoDbContext.SaveAsync(book);
         return book;
     }
 
