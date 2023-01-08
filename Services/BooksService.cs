@@ -2,6 +2,10 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 
 using book_app_api.Models;
+using book_app_api.Infrastructure.Exceptions;
+using book_app_api.Infrastructure.Extensions;
+using FluentValidation;
+using FluentValidation.Results;
 
 
 namespace book_app_api.Services;
@@ -9,10 +13,12 @@ namespace book_app_api.Services;
 public class BooksService : IBooksService
 {
     private readonly IDynamoDBContext _dynamoDbContext;
+    private readonly IValidator<Book> _validator;
 
-    public BooksService(IDynamoDBContext dynamoDbContext)
+    public BooksService(IDynamoDBContext dynamoDbContext, IValidator<Book> validator)
     {
         _dynamoDbContext = dynamoDbContext;
+        _validator = validator;
     }
 
     public async Task<List<Book>> GetAllBooksAsync()
@@ -29,11 +35,13 @@ public class BooksService : IBooksService
 
     public async Task AddBookAsync(Book book)
     {
-        if (book is null)
-            throw new ArgumentException("Book should be passed");
-        Book existingBook =  await GetBookAsync(book.Isbn);
-        if (existingBook is not null)
-            throw new ArgumentException($"Book with isbn='{book.Isbn}' already exists");
+        ValidationResult result = await _validator.ValidateAsync(book);
+        if (!result.IsValid)
+        {
+            var dict = result.AddModelError();
+            return;
+        }
+
         await _dynamoDbContext.SaveAsync(book);
     }
 

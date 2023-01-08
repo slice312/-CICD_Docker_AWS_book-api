@@ -10,16 +10,16 @@ public class Book
 
     [DynamoDBProperty("title")]
     public string? Title { get; set; }
-    
+
     [DynamoDBProperty("author")]
     public string? Author { get; set; }
-    
+
     [DynamoDBProperty("description")]
-    public string? Description { get; set; }
-    
+    public string? Description { get; set; } 
+
     [DynamoDBProperty("pages")]
     public int? Pages { get; set; }
-    
+
     [DynamoDBProperty("isFavorite")]
     public bool IsFavorite { get; set; }
 }

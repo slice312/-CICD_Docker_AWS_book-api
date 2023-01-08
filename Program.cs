@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
-
 using book_app_api.Services;
 using book_app_api.Infrastructure.Swagger;
 using book_app_api.Infrastructure.Extensions;
+using book_app_api.Models;
+using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,11 +37,9 @@ app.Run();
 
 static void DefaultInit(WebApplicationBuilder builder)
 {
-    builder.Services.AddControllers(options =>
-    {
-        options.SuppressAsyncSuffixInActionNames = false;
-    });
-    
+    builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
+    builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -58,7 +57,7 @@ static void AddApiVersioning(WebApplicationBuilder builder)
         options.DefaultApiVersion = new ApiVersion(1, 0);
         options.ReportApiVersions = true;
     });
-    
+
     builder.Services.AddVersionedApiExplorer(options =>
     {
         options.GroupNameFormat = "'v'VVV";
@@ -72,7 +71,6 @@ static void AddAwsDependencies(WebApplicationBuilder builder)
     AWSOptions awsOptions = builder.Configuration.GetAWSOptions();
     // Configure AWS service clients to use these credentials
     builder.Services.AddDefaultAWSOptions(awsOptions);
-
     builder.Services.AddAWSService<IAmazonDynamoDB>();
     builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
 }
