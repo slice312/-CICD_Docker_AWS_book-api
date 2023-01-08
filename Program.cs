@@ -36,7 +36,6 @@ app.Run();
 
 static void DefaultInit(WebApplicationBuilder builder)
 {
-    // Add services to the container.
     builder.Services.AddControllers(options =>
     {
         options.SuppressAsyncSuffixInActionNames = false;
