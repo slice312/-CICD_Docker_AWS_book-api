@@ -17,8 +17,8 @@ public class BooksController : ControllerBase
         _booksService = booksService;
     }
 
-    [HttpGet]
-    [Route("list")]
+    [HttpGet("list")]
+    [ProducesResponseType(typeof(List<Book>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllBooksAsync()
     {
         List<Book> allBooks = await _booksService.GetAllBooksAsync();
@@ -28,16 +28,16 @@ public class BooksController : ControllerBase
     /// <summary>
     /// For API Versioning test
     /// </summary>
-    [HttpGet]
-    [Route("list")]
+    [HttpGet("list")]
     [ApiVersion("2.0")]
     public Task<IActionResult> GetAllBooksAsync2()
     {
         return Task.FromResult<IActionResult>(Ok("lol kek"));
     }
 
-    [HttpGet]
-    [Route("{isbn}")]
+    [HttpGet("{isbn}")]
+    [ProducesResponseType(typeof(Book), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetBookAsync(string isbn)
     {
         Book book = await _booksService.GetBookAsync(isbn);
@@ -45,14 +45,22 @@ public class BooksController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(Book), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddBookAsync(Book book)
     {
-        await _booksService.AddBookAsync(book);
-        return base.Ok(book);
+        try
+        {
+            await _booksService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookAsync), new { isbn = book.Isbn }, book);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpDelete]
-    [Route("{isbn}")]
+    [HttpDelete("{isbn}")]
     public async Task<IActionResult> DeleteBookAsync(string isbn)
     {
         // DeleteAsync is used to delete an item from DynamoDB
@@ -60,8 +68,7 @@ public class BooksController : ControllerBase
         return Ok();
     }
 
-    [HttpPut]
-    [Route("{isbn}")]
+    [HttpPut("{isbn}")]
     public async Task<IActionResult> UpdateBookAsync(string isbn, Book book)
     {
         try
@@ -75,8 +82,7 @@ public class BooksController : ControllerBase
         }
     }
 
-    [HttpPatch]
-    [Route("{isbn}")]
+    [HttpPatch("{isbn}")]
     public async Task<IActionResult> ToggleFavoriteAsync(string isbn)
     {
         try
@@ -90,8 +96,7 @@ public class BooksController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("search/{title}")]
+    [HttpGet("search/{title}")]
     public async Task<IActionResult> Search(string title)
     {
         List<Book> response = await _booksService.GetBooksByTitleAsync(title);
