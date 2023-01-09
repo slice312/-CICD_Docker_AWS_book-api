@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentValidation.Results;
 
-namespace book_app_api.Infrastructure.Exceptions;
 
+namespace book_app_api.Infrastructure.Exceptions;
 
 [ExcludeFromCodeCoverage]
 public class ModelValidationException : Exception
@@ -11,6 +11,6 @@ public class ModelValidationException : Exception
     {
         ValidationResult = result;
     }
-    
-    public ValidationResult ValidationResult { get; init;}
+
+    public ValidationResult ValidationResult { get; }
 }

@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 using book_app_api.Infrastructure.Exceptions;
 using book_app_api.Models;
 using book_app_api.Services;
-using FluentValidation;
-using FluentValidation.Results;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using book_app_api.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 
 namespace book_app_api.Controllers;
@@ -52,7 +49,7 @@ public class BooksController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(Book), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Dictionary<string, string[]>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddBookAsync([FromBody] Book book)
     {
         try
@@ -62,8 +59,8 @@ public class BooksController : ControllerBase
         }
         catch (ModelValidationException ex)
         {
-            // ex.ValidationResult.AddModelError();
-            return BadRequest(ex.ValidationResult.AddModelError());
+            this.ModelState.AddModelErrors(ex.ValidationResult);
+            return BadRequest(this.ModelState);
         }
     }
 
@@ -71,7 +68,7 @@ public class BooksController : ControllerBase
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBookAsync(string isbn)
     {
-        var resp = _booksService.DeleteBookAsync(isbn);
+        await _booksService.DeleteBookAsync(isbn);
         return Ok();
     }
 
