@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
+using book_app_api.Infrastructure.Exceptions;
 using book_app_api.Models;
 using book_app_api.Services;
 using FluentValidation;
@@ -16,12 +17,10 @@ namespace book_app_api.Controllers;
 public class BooksController : ControllerBase
 {
     private readonly IBooksService _booksService;
-    private readonly IValidator<Book> _validator;
 
-    public BooksController(IBooksService booksService, IValidator<Book> validator)
+    public BooksController(IBooksService booksService)
     {
         _booksService = booksService;
-        _validator = validator;
     }
 
     [HttpGet("list")]
@@ -56,18 +55,16 @@ public class BooksController : ControllerBase
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddBookAsync([FromBody] Book book)
     {
-        ValidationResult result = await _validator.ValidateAsync(book);
-        if (!result.IsValid)
+        try
         {
-            // TODO: добавить исключение которое выкидывает ValidationREsult из сервиса
-            // а тут его читать и добавить в ModelState
-            this.ModelState
-            var dict = result.AddModelError();
-            return BadRequest(dict);
+            await _booksService.AddBookAsync(book);
+            return CreatedAtAction(nameof(GetBookAsync), new { isbn = book.Isbn }, book);
         }
-
-        await _booksService.AddBookAsync(book);
-        return CreatedAtAction(nameof(GetBookAsync), new { isbn = book.Isbn }, book);
+        catch (ModelValidationException ex)
+        {
+            // ex.ValidationResult.AddModelError();
+            return BadRequest(ex.ValidationResult.AddModelError());
+        }
     }
 
     [HttpDelete("{isbn}")]

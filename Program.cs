@@ -39,7 +39,9 @@ static void DefaultInit(WebApplicationBuilder builder)
 {
     builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
+    // builder.Services.AddTrzzzz<IBooksService, BooksService>();
+    // builder.Services.AddScoped<AbstractValidator<Book>, BookCreateValidator>();
+    
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();

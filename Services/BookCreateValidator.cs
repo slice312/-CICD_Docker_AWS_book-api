@@ -1,11 +1,13 @@
-using book_app_api.Models;
 using FluentValidation;
+using book_app_api.Models;
+using FluentValidation.Results;
+
 
 namespace book_app_api.Services;
 
 public class BookCreateValidator : AbstractValidator<Book>
 {
-    public BookCreateValidator(IBooksService booksService)
+    public BookCreateValidator(IServiceProvider services)
     {
         RuleFor(x => x.Title)
             .NotEmpty()
@@ -23,6 +25,7 @@ public class BookCreateValidator : AbstractValidator<Book>
             .WithMessage("ISBN required")
             .MustAsync(async (isbn, cancellation) =>
             {
+                var booksService = services.GetRequiredService<IBooksService>();
                 Book existingBook = await booksService.GetBookAsync(isbn);
                 return existingBook is null;
             })

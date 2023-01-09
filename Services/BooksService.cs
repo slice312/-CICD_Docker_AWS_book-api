@@ -3,7 +3,6 @@ using Amazon.DynamoDBv2.DocumentModel;
 
 using book_app_api.Models;
 using book_app_api.Infrastructure.Exceptions;
-using book_app_api.Infrastructure.Extensions;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -15,7 +14,7 @@ public class BooksService : IBooksService
     private readonly IDynamoDBContext _dynamoDbContext;
     private readonly IValidator<Book> _validator;
 
-    public BooksService(IDynamoDBContext dynamoDbContext, IValidator<Book> validator)
+    public BooksService(IDynamoDBContext dynamoDbContext,  IValidator<Book> validator)
     {
         _dynamoDbContext = dynamoDbContext;
         _validator = validator;
@@ -37,10 +36,7 @@ public class BooksService : IBooksService
     {
         ValidationResult result = await _validator.ValidateAsync(book);
         if (!result.IsValid)
-        {
-            var dict = result.AddModelError();
-            return;
-        }
+            throw new ModelValidationException(result);
 
         await _dynamoDbContext.SaveAsync(book);
     }
