@@ -1,7 +1,11 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
+using FluentValidation;
+using FluentValidation.Results;
 
 using book_app_api.Models;
+using book_app_api.Infrastructure.Exceptions;
 
 
 namespace book_app_api.Services;
@@ -9,10 +13,12 @@ namespace book_app_api.Services;
 public class BooksService : IBooksService
 {
     private readonly IDynamoDBContext _dynamoDbContext;
+    private readonly IValidator<Book> _validator;
 
-    public BooksService(IDynamoDBContext dynamoDbContext)
+    public BooksService(IDynamoDBContext dynamoDbContext, IValidator<Book> validator)
     {
         _dynamoDbContext = dynamoDbContext;
+        _validator = validator;
     }
 
     public async Task<List<Book>> GetAllBooksAsync()
@@ -29,28 +35,34 @@ public class BooksService : IBooksService
 
     public async Task AddBookAsync(Book book)
     {
-        if (book is null)
-            throw new ArgumentException("Book should be passed");
-        Book existingBook =  await GetBookAsync(book.Isbn);
-        if (existingBook is not null)
-            throw new ArgumentException($"Book with isbn='{book.Isbn}' already exists");
+        ValidationResult result = await _validator
+                .ValidateAsync(book, options => options.IncludeRuleSets("Add"));
+        if (!result.IsValid)
+            throw new ModelValidationException(result);
+
         await _dynamoDbContext.SaveAsync(book);
     }
 
+    public async Task<Book> UpdateBookAsync(string isbn, Book book)
+    {
+        ValidationResult result = await _validator
+            .ValidateAsync(book, options => options.IncludeRuleSets("Update"));
+        if (!result.IsValid)
+            throw new ModelValidationException(result);
+        
+        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        if (bookInBase is null)
+            throw new ResourceNotFoundException("Not found");
+        await _dynamoDbContext.SaveAsync(book);
+        return book;
+    }
+    
     public async Task DeleteBookAsync(string isbn)
     {
         await _dynamoDbContext.DeleteAsync<Book>(isbn);
     }
 
-    public async Task<Book> UpdateBookAsync(string isbn, Book book)
-    {
-        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
-        if (bookInBase is null)
-            throw new Exception("Not found");
-        await _dynamoDbContext.SaveAsync(book);
-        return book;
-    }
-
+    // TODO: not works
     public async Task<List<Book>> GetBooksByTitleAsync(string title)
     {
         // Note: You can only query the tables that have a composite primary key (partition key and sort key).

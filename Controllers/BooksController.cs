@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Amazon.DynamoDBv2.Model;
+
 using book_app_api.Models;
 using book_app_api.Services;
+using book_app_api.Infrastructure.Exceptions;
+using book_app_api.Infrastructure.Extensions;
 
 
 namespace book_app_api.Controllers;
@@ -28,8 +32,8 @@ public class BooksController : ControllerBase
     /// <summary>
     /// For API Versioning test
     /// </summary>
-    [HttpGet("list")]
     [ApiVersion("2.0")]
+    [HttpGet("list")]
     public Task<IActionResult> GetAllBooksAsync2()
     {
         return Task.FromResult<IActionResult>(Ok("lol kek"));
@@ -46,40 +50,49 @@ public class BooksController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(Book), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddBookAsync(Book book)
+    [ProducesResponseType(typeof(Dictionary<string, string[]>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddBookAsync([FromBody] Book book)
     {
         try
         {
             await _booksService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBookAsync), new { isbn = book.Isbn }, book);
         }
-        catch (Exception ex)
+        catch (ModelValidationException ex)
         {
-            return BadRequest(ex.Message);
+            this.ModelState.AddModelErrors(ex.ValidationResult);
+            return BadRequest(this.ModelState);
         }
     }
 
-    [HttpDelete("{isbn}")]
-    public async Task<IActionResult> DeleteBookAsync(string isbn)
-    {
-        // DeleteAsync is used to delete an item from DynamoDB
-        await _booksService.DeleteBookAsync(isbn);
-        return Ok();
-    }
-
     [HttpPut("{isbn}")]
-    public async Task<IActionResult> UpdateBookAsync(string isbn, Book book)
+    [ProducesResponseType(typeof(Book), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Dictionary<string, string[]>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateBookAsync([FromBody] Book book, string isbn)
     {
         try
         {
             await _booksService.UpdateBookAsync(isbn, book);
             return Ok(book);
         }
-        catch (Exception e)
+        catch (ModelValidationException ex)
+        {
+            this.ModelState.AddModelErrors(ex.ValidationResult);
+            return BadRequest(this.ModelState);
+        }
+        catch (ResourceNotFoundException)
         {
             return NotFound();
         }
+    }
+    
+    [HttpDelete("{isbn}")]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteBookAsync(string isbn)
+    {
+        await _booksService.DeleteBookAsync(isbn);
+        return Ok();
     }
 
     [HttpPatch("{isbn}")]
