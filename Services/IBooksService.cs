@@ -1,5 +1,6 @@
 using book_app_api.Models;
 
+
 namespace book_app_api.Services;
 
 public interface IBooksService
@@ -10,9 +11,9 @@ public interface IBooksService
 
     Task AddBookAsync(Book book);
 
-    Task DeleteBookAsync(string isbn);
-
     Task<Book> UpdateBookAsync(string isbn, Book book);
+
+    Task DeleteBookAsync(string isbn);
 
     Task<List<Book>> GetBooksByTitleAsync(string title);
 

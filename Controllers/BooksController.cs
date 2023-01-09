@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using book_app_api.Infrastructure.Exceptions;
+using Amazon.DynamoDBv2.Model;
+
 using book_app_api.Models;
 using book_app_api.Services;
+using book_app_api.Infrastructure.Exceptions;
 using book_app_api.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 
 namespace book_app_api.Controllers;
@@ -64,6 +65,28 @@ public class BooksController : ControllerBase
         }
     }
 
+    [HttpPut("{isbn}")]
+    [ProducesResponseType(typeof(Book), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Dictionary<string, string[]>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateBookAsync([FromBody] Book book, string isbn)
+    {
+        try
+        {
+            await _booksService.UpdateBookAsync(isbn, book);
+            return Ok(book);
+        }
+        catch (ModelValidationException ex)
+        {
+            this.ModelState.AddModelErrors(ex.ValidationResult);
+            return BadRequest(this.ModelState);
+        }
+        catch (ResourceNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+    
     [HttpDelete("{isbn}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteBookAsync(string isbn)
@@ -91,19 +114,5 @@ public class BooksController : ControllerBase
     {
         List<Book> response = await _booksService.GetBooksByTitleAsync(title);
         return Ok(response);
-    }
-
-    [HttpPut("{isbn}")]
-    public async Task<IActionResult> UpdateBookAsync([FromBody] Book book, string isbn)
-    {
-        try
-        {
-            await _booksService.UpdateBookAsync(isbn, book);
-            return Ok(book);
-        }
-        catch (Exception e)
-        {
-            return NotFound();
-        }
     }
 }

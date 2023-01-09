@@ -1,5 +1,6 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -34,25 +35,31 @@ public class BooksService : IBooksService
 
     public async Task AddBookAsync(Book book)
     {
-        ValidationResult result = await _validator.ValidateAsync(book);
+        ValidationResult result = await _validator
+                .ValidateAsync(book, options => options.IncludeRuleSets("Add"));
         if (!result.IsValid)
             throw new ModelValidationException(result);
 
         await _dynamoDbContext.SaveAsync(book);
     }
 
+    public async Task<Book> UpdateBookAsync(string isbn, Book book)
+    {
+        ValidationResult result = await _validator
+            .ValidateAsync(book, options => options.IncludeRuleSets("Update"));
+        if (!result.IsValid)
+            throw new ModelValidationException(result);
+        
+        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
+        if (bookInBase is null)
+            throw new ResourceNotFoundException("Not found");
+        await _dynamoDbContext.SaveAsync(book);
+        return book;
+    }
+    
     public async Task DeleteBookAsync(string isbn)
     {
         await _dynamoDbContext.DeleteAsync<Book>(isbn);
-    }
-
-    public async Task<Book> UpdateBookAsync(string isbn, Book book)
-    {
-        var bookInBase = await _dynamoDbContext.LoadAsync<Book>(isbn);
-        if (bookInBase is null)
-            throw new Exception("Not found");
-        await _dynamoDbContext.SaveAsync(book);
-        return book;
     }
 
     // TODO: not works
