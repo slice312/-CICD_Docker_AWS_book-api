@@ -7,5 +7,5 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
       FRONTEND_ALLOWED_HOSTS: ${FRONTEND_ALLOWED_HOSTS}

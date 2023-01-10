@@ -8,6 +8,9 @@ public static class ServiceExtensions
 {
     public static void ConfigureCors(this IServiceCollection services)
     {
+        string env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        Console.Out.WriteLine($"ASPNETCORE_ENVIRONMENT={env}");
+        
         string[]? allowedCorsHosts =
             Environment.GetEnvironmentVariable("FRONTEND_ALLOWED_HOSTS")
                 ?.Split(";", StringSplitOptions.RemoveEmptyEntries);

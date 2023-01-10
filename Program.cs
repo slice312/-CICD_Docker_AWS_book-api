@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Extensions.NETCore.Setup;
+using FluentValidation;
+
 using book_app_api.Services;
 using book_app_api.Infrastructure.Swagger;
 using book_app_api.Infrastructure.Extensions;
-using book_app_api.Models;
-using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,8 +39,6 @@ static void DefaultInit(WebApplicationBuilder builder)
 {
     builder.Services.AddControllers(options => { options.SuppressAsyncSuffixInActionNames = false; });
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-    // builder.Services.AddTrzzzz<IBooksService, BooksService>();
-    // builder.Services.AddScoped<AbstractValidator<Book>, BookCreateValidator>();
     
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
