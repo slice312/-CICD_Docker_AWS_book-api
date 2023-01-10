@@ -8,6 +8,8 @@ using FluentValidation;
 using book_app_api.Services;
 using book_app_api.Infrastructure.Swagger;
 using book_app_api.Infrastructure.Extensions;
+using book_app_api.Models;
+using FluentValidation;
 
 
 var builder = WebApplication.CreateBuilder(args);
