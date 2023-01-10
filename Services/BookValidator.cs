@@ -26,6 +26,8 @@ public class BookValidator : AbstractValidator<Book>
                 .WithMessage("ISBN required")
                 .MustAsync(async (isbn, cancellation) =>
                 {
+                    if (isbn is null)
+                        return false;
                     var booksService = services.GetRequiredService<IBooksService>();
                     Book existingBook = await booksService.GetBookAsync(isbn);
                     return existingBook is null;
