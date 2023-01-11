@@ -20,7 +20,7 @@ jobs:
         run: echo "FRONTEND_ALLOWED_HOSTS=${{ secrets.FRONTEND_ALLOWED_HOSTS }}" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: easingthemes/ssh-deploy@v3.1.0
-      - uses: appleboy/ssh-action@master
+      - uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.HOST_DNS }}   
           username: ${{ secrets.USERNAME }}
